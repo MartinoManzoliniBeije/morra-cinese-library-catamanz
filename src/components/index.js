@@ -1,3 +1,4 @@
-import Button from "./functionalComponents/button/Button";
+//import Button from "./functionalComponents/button/Button";
+import { ButtonMobile, ButtonWeb } from "./functionalComponents/button/Button";
 
-export { Button };
+export { ButtonMobile, ButtonWeb };
