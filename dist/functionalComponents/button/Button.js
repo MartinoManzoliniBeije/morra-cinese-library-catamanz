@@ -5,9 +5,20 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _react = _interopRequireDefault(require("react"));
+var _reactNative = require("react-native");
+var _buttonStyle = require("./buttonStyle");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function Button() {
-  return /*#__PURE__*/_react.default.createElement("div", null, "Button versione 2");
+function Button(props) {
+  function buttonCallback(e) {
+    props.callbackInput(e);
+  }
+  return /*#__PURE__*/_react.default.createElement(_reactNative.View, {
+    style: _buttonStyle.buttonStyle.container
+  }, /*#__PURE__*/_react.default.createElement(_reactNative.TouchableOpacity, {
+    onPress: buttonCallback
+  }, /*#__PURE__*/_react.default.createElement(_reactNative.Image, {
+    source: props.source
+  }), /*#__PURE__*/_react.default.createElement(_reactNative.Text, null, props.label)));
 }
 var _default = Button;
 exports.default = _default;
