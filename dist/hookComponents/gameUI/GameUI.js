@@ -25,38 +25,32 @@ function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefine
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 function GameUI(props) {
   var _useState = (0, _react.useState)({
-      showGame: false,
+      // showGame: false,
       currentGame: {
         userChoice: "",
         cpuChoice: "",
         userScore: 0,
         cpuScore: 0
-      }
+      },
+      userObj: {
+        name: "",
+        gamesWon: 0,
+        gamesLost: 0,
+        totalGames: 0
+        // totalCredit: 0,
+      },
+
+      cpuWins: 1,
+      currentWin: "",
+      isModalVisible: false
     }),
     _useState2 = _slicedToArray(_useState, 2),
     state = _useState2[0],
     setState = _useState2[1];
-  var userObj = {
-    name: "",
-    gamesWon: 0,
-    gamesLost: 0,
-    totalGames: 0,
-    totalCredit: 0
-  };
+  var currentWin = "";
 
   //-----------------------------------------------------------------------------
   var computerChoices = ["CARTA", "SASSO", "FORBICE"];
-  function startGame(event, storageUsers, userObj, state, setState) {
-    event.preventDefault();
-    var name = event.target.name.value;
-    var ticketcode = event.target.ticketcode.value;
-    event.target.reset();
-    var showGame = false;
-    setState(_objectSpread(_objectSpread({}, state), {}, {
-      showGame: showGame
-    }));
-    //this.setState({ showGame: showGame });
-  }
 
   // FUNCTION CALLED ON BUTTON CLICK TO GENERATE CASUAL CHOICE FOR CPU
   function computerchoice() {
@@ -64,100 +58,155 @@ function GameUI(props) {
   }
 
   // FUNCTION TO GET VALUE FROM BUTTONS
-  function buttonCallback(e, userObj, state, setState) {
+  function scissors() {
     var cpuChoice = computerchoice();
-    handleScore(e.target.textContent, userObj, cpuChoice, state, setState);
+    var choice = "FORBICE";
+    handleScore(choice, cpuChoice);
+  }
+  function paper() {
+    var cpuChoice = computerchoice();
+    var choice = "CARTA";
+    handleScore(choice, cpuChoice);
+  }
+  function rock() {
+    var cpuChoice = computerchoice();
+    var choice = "SASSO";
+    handleScore(choice, cpuChoice);
   }
   function roundResult(userChoice, cpuChoice) {
     if (userChoice === cpuChoice) {
+      console.log("pareggio");
       return "Pareggio";
     } else if (userChoice === "CARTA" && cpuChoice === "FORBICE" || userChoice === "FORBICE" && cpuChoice === "SASSO" || userChoice === "SASSO" && cpuChoice === "CARTA") {
+      console.log("hai perso");
       return "Hai perso";
     }
+    console.log("hai vinto");
     return "Hai vinto";
   }
-  function handleScore(userChoice, userObj, cpuChoice, state,
-  //storageUsers,
-  setState) {
-    var userScore = state.currentGame.userScore;
-    var cpuScore = state.currentGame.cpuScore;
-    var showGame = state.showGame;
+  function handleScore(userChoice, cpuChoice) {
+    var _state$currentGame, _state$currentGame2;
+    var userScore = state === null || state === void 0 ? void 0 : (_state$currentGame = state.currentGame) === null || _state$currentGame === void 0 ? void 0 : _state$currentGame.userScore;
+    var cpuScore = state === null || state === void 0 ? void 0 : (_state$currentGame2 = state.currentGame) === null || _state$currentGame2 === void 0 ? void 0 : _state$currentGame2.cpuScore;
+    var currentWinner = "";
+    var modalStatus = false;
     if (roundResult(userChoice, cpuChoice) === "Hai vinto") {
       userScore += 1;
     } else if (roundResult(userChoice, cpuChoice) === "Hai perso") {
       cpuScore += 1;
     }
-    if (userScore === 3) {
-      userScore = 0;
-      cpuScore = 0;
-      userObj.gamesWon += 1;
-      userObj.totalGames += 1;
-      userObj.totalCredit += 0.2;
-      alert("Hai vinto! Il tuo credito accumulato \xE8: ".concat(userObj.totalCredit, " crediti!"));
-      showGame = !showGame;
-    } else if (cpuScore === 3) {
-      alert("Hai perso");
-      userScore = 0;
-      cpuScore = 0;
-      userObj.gamesLost += 1;
-      userObj.totalGames += 1;
-    }
+    currentWinner = winnerProva(userScore, cpuScore);
+    console.log("current winner prima del settaggio stato: ", currentWinner);
+    currentWinner !== "" ? modalStatus = true : modalStatus = false;
     setState(_objectSpread(_objectSpread({}, state), {}, {
       currentGame: {
         userScore: userScore,
         cpuScore: cpuScore,
         userChoice: userChoice,
         cpuChoice: cpuChoice
-      }
+      },
+      currentWin: currentWinner,
+      isModalVisible: modalStatus
     }));
-    setTimeout(function () {
-      setState(_objectSpread(_objectSpread({}, state), {}, {
-        showGame: showGame
-      }));
-    }, 3000);
   }
   //-----------------------------------------------------------------------------
 
-  function handleButtonCallback(e) {
-    buttonCallback(e, userObj, state, setState);
+  function winnerProva(userScore, cpuScore) {
+    if (userScore - cpuScore > 1 || userScore === 3) {
+      currentWin = "user";
+    } else if (cpuScore - userScore > 1 || cpuScore === 3) {
+      currentWin = "cpu";
+    } else {
+      currentWin = "";
+    }
+    return currentWin;
   }
-  (0, _react.useEffect)(function () {
-    //initializeStorage();
-  }, []);
-  return /*#__PURE__*/_react.default.createElement(_reactNative.View, null, /*#__PURE__*/_react.default.createElement(_reactNative.View, {
+  function nextGame() {
+    var cpuWins = state.cpuWins;
+    var userWins = state.userObj.gamesWon;
+    currentWin === "user" ? userWins++ : cpuWins++;
+    setState(_objectSpread(_objectSpread({}, state), {}, {
+      cpuWins: cpuWins,
+      userObj: {
+        gamesWon: userWins,
+        gamesLost: cpuWins,
+        totalGames: cpuWins + userWins
+      },
+      currentGame: {
+        userScore: 0,
+        cpuScore: 0
+      },
+      currentWin: "",
+      isModalVisible: false
+    }));
+    currentWin = "";
+    console.log("NEXT GAME");
+  }
+  function setIsVisible() {
+    var modalStatus = state.isModalVisible;
+    setState(_objectSpread(_objectSpread({}, state), {}, {
+      isModalVisible: !modalStatus
+    }));
+  }
+  function AnimatedModal() {
+    return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_reactNative.Modal, {
+      animationType: "fade",
+      onRequestClose: setIsVisible,
+      visible: state.isModalVisible
+    }, /*#__PURE__*/_react.default.createElement(_reactNative.View, {
+      style: _gameUIStyle.default.modal
+    }, state.currentWin === "cpu" && /*#__PURE__*/_react.default.createElement(_reactNative.Text, {
+      style: _gameUIStyle.default.resultText
+    }, "SCONFITTA"), state.currentWin === "user" && /*#__PURE__*/_react.default.createElement(_reactNative.Text, {
+      style: _gameUIStyle.default.resultText
+    }, "VITTORIA"), state.currentWin !== "" && /*#__PURE__*/_react.default.createElement(_index.CustomButton, {
+      label: "NEXT GAME",
+      callbackInput: nextGame,
+      style: {
+        marginTop: 100
+      }
+    }), /*#__PURE__*/_react.default.createElement(_index.CustomButton, {
+      callbackInput: setIsVisible,
+      label: "Close Modal"
+    }))));
+  }
+  return /*#__PURE__*/_react.default.createElement(_reactNative.View, {
+    style: {
+      flex: 1
+    }
+  }, AnimatedModal(), /*#__PURE__*/_react.default.createElement(_reactNative.View, {
     style: _gameUIStyle.default.gamecontainer
   }, /*#__PURE__*/_react.default.createElement(_reactNative.Text, {
     style: _gameUIStyle.default.rulesText
   }, "Il gioco termina quando uno dei due giocatori raggiunge il punteggio di 3. Buona fortuna!"), /*#__PURE__*/_react.default.createElement(_reactNative.View, {
     style: _gameUIStyle.default.buttonsContainer
   }, /*#__PURE__*/_react.default.createElement(_index.CustomButton, {
-    style: {
-      marginTop: 0
-    },
-    label: "SASSO",
-    callbackInput: handleButtonCallback,
-    source: props.stoneImage
-  }), /*#__PURE__*/_react.default.createElement(_index.CustomButton, {
-    style: {
-      marginTop: 100
-    },
-    label: "CARTA",
-    callbackInput: handleButtonCallback,
-    source: props.paperImage
-  }), /*#__PURE__*/_react.default.createElement(_index.CustomButton, {
-    style: {
-      marginTop: 200
-    },
+    style: _gameUIStyle.default.button,
     label: "FORBICE",
-    callbackInput: handleButtonCallback,
-    source: props.scissorImage
+    callbackInput: scissors
+  }), /*#__PURE__*/_react.default.createElement(_index.CustomButton, {
+    style: _gameUIStyle.default.button,
+    label: "SASSO",
+    callbackInput: rock
+  }), /*#__PURE__*/_react.default.createElement(_index.CustomButton, {
+    style: _gameUIStyle.default.button,
+    label: "CARTA",
+    callbackInput: paper
   })), /*#__PURE__*/_react.default.createElement(_reactNative.View, {
     style: _gameUIStyle.default.gameScore
   }, /*#__PURE__*/_react.default.createElement(_reactNative.View, {
     style: _gameUIStyle.default.scoreContainer
-  }), /*#__PURE__*/_react.default.createElement(_reactNative.View, {
+  }, /*#__PURE__*/_react.default.createElement(_reactNative.Text, {
+    style: _gameUIStyle.default.scoreLabel
+  }, "Punti Utente:"), /*#__PURE__*/_react.default.createElement(_reactNative.Text, {
+    style: _gameUIStyle.default.scoreText
+  }, state.currentGame.userScore)), /*#__PURE__*/_react.default.createElement(_reactNative.View, {
     style: _gameUIStyle.default.scoreContainer
-  }, /*#__PURE__*/_react.default.createElement(_reactNative.Text, null, "Punti Utente:", state.currentGame.userScore), /*#__PURE__*/_react.default.createElement(_reactNative.Text, null, "Punti CPU:", state.currentGame.cpuScore)), /*#__PURE__*/_react.default.createElement(_reactNative.View, null, /*#__PURE__*/_react.default.createElement(_reactNative.Text, null, "Credito accumulato: ", userObj.totalCredit)))));
+  }, /*#__PURE__*/_react.default.createElement(_reactNative.Text, {
+    style: _gameUIStyle.default.scoreLabel
+  }, "Punti CPU:"), /*#__PURE__*/_react.default.createElement(_reactNative.Text, {
+    style: _gameUIStyle.default.scoreText
+  }, state.currentGame.cpuScore)))));
 }
 var _default = GameUI;
 exports.default = _default;

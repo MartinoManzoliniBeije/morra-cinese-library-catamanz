@@ -1,45 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity, Image, Modal } from "react-native";
 import gameStyles from "./gameUIStyle";
 import { CustomButton } from "../../index";
 
 function GameUI(props) {
   const [state, setState] = useState({
-    showGame: false,
+    // showGame: false,
     currentGame: {
       userChoice: "",
       cpuChoice: "",
       userScore: 0,
       cpuScore: 0,
     },
+    userObj: {
+      name: "",
+      gamesWon: 0,
+      gamesLost: 0,
+      totalGames: 0,
+      // totalCredit: 0,
+    },
+    cpuWins: 1,
+    currentWin: "",
+    isModalVisible: false,
   });
 
-  let userObj = {
-    name: "",
-    gamesWon: 0,
-    gamesLost: 0,
-    totalGames: 0,
-    totalCredit: 0,
-  };
+  let currentWin = "";
 
   //-----------------------------------------------------------------------------
   const computerChoices = ["CARTA", "SASSO", "FORBICE"];
-
-  function startGame(event, storageUsers, userObj, state, setState) {
-    event.preventDefault();
-
-    const name = event.target.name.value;
-    const ticketcode = event.target.ticketcode.value;
-    event.target.reset();
-
-    let showGame = false;
-
-    setState({
-      ...state,
-      showGame: showGame,
-    });
-    //this.setState({ showGame: showGame });
-  }
 
   // FUNCTION CALLED ON BUTTON CLICK TO GENERATE CASUAL CHOICE FOR CPU
   function computerchoice() {
@@ -47,36 +35,43 @@ function GameUI(props) {
   }
 
   // FUNCTION TO GET VALUE FROM BUTTONS
-  function buttonCallback(e, userObj, state, setState) {
+  function scissors() {
     let cpuChoice = computerchoice();
-
-    handleScore(e.target.textContent, userObj, cpuChoice, state, setState);
+    let choice = "FORBICE";
+    handleScore(choice, cpuChoice);
+  }
+  function paper() {
+    let cpuChoice = computerchoice();
+    let choice = "CARTA";
+    handleScore(choice, cpuChoice);
+  }
+  function rock() {
+    let cpuChoice = computerchoice();
+    let choice = "SASSO";
+    handleScore(choice, cpuChoice);
   }
 
   function roundResult(userChoice, cpuChoice) {
     if (userChoice === cpuChoice) {
+      console.log("pareggio");
       return "Pareggio";
     } else if (
       (userChoice === "CARTA" && cpuChoice === "FORBICE") ||
       (userChoice === "FORBICE" && cpuChoice === "SASSO") ||
       (userChoice === "SASSO" && cpuChoice === "CARTA")
     ) {
+      console.log("hai perso");
       return "Hai perso";
     }
+    console.log("hai vinto");
     return "Hai vinto";
   }
 
-  function handleScore(
-    userChoice,
-    userObj,
-    cpuChoice,
-    state,
-    //storageUsers,
-    setState
-  ) {
-    let userScore = state.currentGame.userScore;
-    let cpuScore = state.currentGame.cpuScore;
-    let showGame = state.showGame;
+  function handleScore(userChoice, cpuChoice) {
+    let userScore = state?.currentGame?.userScore;
+    let cpuScore = state?.currentGame?.cpuScore;
+    let currentWinner = "";
+    let modalStatus = false;
 
     if (roundResult(userChoice, cpuChoice) === "Hai vinto") {
       userScore += 1;
@@ -84,24 +79,9 @@ function GameUI(props) {
       cpuScore += 1;
     }
 
-    if (userScore === 3) {
-      userScore = 0;
-      cpuScore = 0;
-      userObj.gamesWon += 1;
-      userObj.totalGames += 1;
-      userObj.totalCredit += 0.2;
-      alert(
-        `Hai vinto! Il tuo credito accumulato è: ${userObj.totalCredit} crediti!`
-      );
-
-      showGame = !showGame;
-    } else if (cpuScore === 3) {
-      alert("Hai perso");
-      userScore = 0;
-      cpuScore = 0;
-      userObj.gamesLost += 1;
-      userObj.totalGames += 1;
-    }
+    currentWinner = winnerProva(userScore, cpuScore);
+    console.log("current winner prima del settaggio stato: ", currentWinner);
+    currentWinner !== "" ? (modalStatus = true) : (modalStatus = false);
 
     setState({
       ...state,
@@ -111,73 +91,124 @@ function GameUI(props) {
         userChoice: userChoice,
         cpuChoice: cpuChoice,
       },
+      currentWin: currentWinner,
+      isModalVisible: modalStatus,
     });
-
-    setTimeout(() => {
-      setState({ ...state, showGame: showGame });
-    }, 3000);
   }
   //-----------------------------------------------------------------------------
 
-  function handleButtonCallback(e) {
-    buttonCallback(e, userObj, state, setState);
+  function winnerProva(userScore, cpuScore) {
+    if (userScore - cpuScore > 1 || userScore === 3) {
+      currentWin = "user";
+    } else if (cpuScore - userScore > 1 || cpuScore === 3) {
+      currentWin = "cpu";
+    } else {
+      currentWin = "";
+    }
+    return currentWin;
   }
 
-  useEffect(() => {
-    //initializeStorage();
-  }, []);
+  function nextGame() {
+    let cpuWins = state.cpuWins;
+    let userWins = state.userObj.gamesWon;
+    currentWin === "user" ? userWins++ : cpuWins++;
+    setState({
+      ...state,
+      cpuWins: cpuWins,
+      userObj: {
+        gamesWon: userWins,
+        gamesLost: cpuWins,
+        totalGames: cpuWins + userWins,
+      },
+      currentGame: {
+        userScore: 0,
+        cpuScore: 0,
+      },
+      currentWin: "",
+      isModalVisible: false,
+    });
+    currentWin = "";
+    console.log("NEXT GAME");
+  }
+
+  function setIsVisible() {
+    let modalStatus = state.isModalVisible;
+    setState({
+      ...state,
+      isModalVisible: !modalStatus,
+    });
+  }
+
+  function AnimatedModal() {
+    return (
+      <>
+        <Modal
+          animationType={"fade"}
+          onRequestClose={setIsVisible}
+          visible={state.isModalVisible}
+        >
+          <View style={gameStyles.modal}>
+            {state.currentWin === "cpu" && (
+              <Text style={gameStyles.resultText}>SCONFITTA</Text>
+            )}
+            {state.currentWin === "user" && (
+              <Text style={gameStyles.resultText}>VITTORIA</Text>
+            )}
+            {state.currentWin !== "" && (
+              <CustomButton
+                label="NEXT GAME"
+                callbackInput={nextGame}
+                style={{ marginTop: 100 }}
+              />
+            )}
+            <CustomButton callbackInput={setIsVisible} label={"Close Modal"} />
+          </View>
+        </Modal>
+      </>
+    );
+  }
 
   return (
-    <View>
-      {/*{this.state.showGame && (*/}
+    <View style={{ flex: 1 }}>
+      {AnimatedModal()}
       <View style={gameStyles.gamecontainer}>
-        {/*<Player
-          autoplay
-          loop
-          src="https://assets5.lottiefiles.com/packages/lf20_uGzzQB.json"
-        ></Player>*/}
+        {/* <CustomButton callbackInput={functionIdiot} label={"Test stato"} /> */}
         <Text style={gameStyles.rulesText}>
           Il gioco termina quando uno dei due giocatori raggiunge il punteggio
           di 3. Buona fortuna!
         </Text>
         <View style={gameStyles.buttonsContainer}>
           <CustomButton
-            style={{ marginTop: 100 }}
-            label="SASSO"
-            callbackInput={handleButtonCallback}
-            source={props.stoneImage}
-          />
-          <CustomButton
-            style={{ marginTop: 100 }}
-            label="CARTA"
-            callbackInput={handleButtonCallback}
-            source={props.paperImage}
-          />
-          <CustomButton
-            style={{ marginTop: 100 }}
+            style={gameStyles.button}
             label="FORBICE"
-            callbackInput={handleButtonCallback}
-            source={props.scissorImage}
+            callbackInput={scissors}
+          />
+          <CustomButton
+            style={gameStyles.button}
+            label="SASSO"
+            callbackInput={rock}
+          />
+          <CustomButton
+            style={gameStyles.button}
+            label="CARTA"
+            callbackInput={paper}
           />
         </View>
         <View style={gameStyles.gameScore}>
-          <View style={gameStyles.scoreContainer}></View>
           <View style={gameStyles.scoreContainer}>
-            <Text>
-              Punti Utente:
+            <Text style={gameStyles.scoreLabel}>Punti Utente:</Text>
+            <Text style={gameStyles.scoreText}>
               {state.currentGame.userScore}
             </Text>
-            <Text>
-              Punti CPU:
+          </View>
+          <View style={gameStyles.scoreContainer}>
+            <Text style={gameStyles.scoreLabel}>Punti CPU:</Text>
+            <Text style={gameStyles.scoreText}>
               {state.currentGame.cpuScore}
             </Text>
           </View>
-          <View>
-            <Text>Credito accumulato: {userObj.totalCredit}</Text>
-          </View>
         </View>
       </View>
-      {/*)}*/}
     </View>
   );
 }
