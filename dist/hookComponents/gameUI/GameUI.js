@@ -45,7 +45,7 @@ function GameUI(props) {
   };
 
   //-----------------------------------------------------------------------------
-  var computerChoices = ["carta", "sasso", "forbice"];
+  var computerChoices = ["CARTA", "SASSO", "FORBICE"];
   function startGame(event, storageUsers, userObj, state, setState) {
     event.preventDefault();
     var name = event.target.name.value;
@@ -65,16 +65,13 @@ function GameUI(props) {
 
   // FUNCTION TO GET VALUE FROM BUTTONS
   function buttonCallback(e, userObj, state, setState) {
-    console.log("Seeeeeeeeeeeeeeeeeeee", e.target.textContent);
-    //console.log("Scelta utente:", e.target.value);
     var cpuChoice = computerchoice();
-    console.log("Scelta cpu:", cpuChoice);
-    handleScore(e.target.textContent.toLowerCase(), userObj, cpuChoice, state, setState);
+    handleScore(e.target.textContent, userObj, cpuChoice, state, setState);
   }
   function roundResult(userChoice, cpuChoice) {
     if (userChoice === cpuChoice) {
       return "Pareggio";
-    } else if (userChoice === "carta" && cpuChoice === "forbice" || userChoice === "forbice" && cpuChoice === "sasso" || userChoice === "sasso" && cpuChoice === "carta") {
+    } else if (userChoice === "CARTA" && cpuChoice === "FORBICE" || userChoice === "FORBICE" && cpuChoice === "SASSO" || userChoice === "SASSO" && cpuChoice === "CARTA") {
       return "Hai perso";
     }
     return "Hai vinto";
@@ -134,15 +131,23 @@ function GameUI(props) {
   }, "Il gioco termina quando uno dei due giocatori raggiunge il punteggio di 3. Buona fortuna!"), /*#__PURE__*/_react.default.createElement(_reactNative.View, {
     style: _gameUIStyle.default.buttonsContainer
   }, /*#__PURE__*/_react.default.createElement(_index.CustomButton, {
+    style: {
+      marginTop: 0
+    },
     label: "SASSO",
     callbackInput: handleButtonCallback,
-    source: props.stoneImage,
-    detail: "SASSO"
+    source: props.stoneImage
   }), /*#__PURE__*/_react.default.createElement(_index.CustomButton, {
+    style: {
+      marginTop: 100
+    },
     label: "CARTA",
     callbackInput: handleButtonCallback,
     source: props.paperImage
   }), /*#__PURE__*/_react.default.createElement(_index.CustomButton, {
+    style: {
+      marginTop: 200
+    },
     label: "FORBICE",
     callbackInput: handleButtonCallback,
     source: props.scissorImage

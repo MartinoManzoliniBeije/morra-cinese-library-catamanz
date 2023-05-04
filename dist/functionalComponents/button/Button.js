@@ -13,9 +13,10 @@ function CustomButton(props) {
     props.callbackInput(e);
   }
   return /*#__PURE__*/_react.default.createElement(_reactNative.View, {
-    style: _buttonStyle.buttonStyle.container
+    style: [_buttonStyle.buttonStyle.container, props.style]
   }, /*#__PURE__*/_react.default.createElement(_reactNative.TouchableOpacity, {
-    onPress: buttonCallback
+    onPress: buttonCallback,
+    style: _buttonStyle.buttonStyle.button
   }, /*#__PURE__*/_react.default.createElement(_reactNative.Image, {
     source: props.source
   }), /*#__PURE__*/_react.default.createElement(_reactNative.Text, null, props.label)));

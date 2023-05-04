@@ -23,7 +23,7 @@ function GameUI(props) {
   };
 
   //-----------------------------------------------------------------------------
-  const computerChoices = ["carta", "sasso", "forbice"];
+  const computerChoices = ["CARTA", "SASSO", "FORBICE"];
 
   function startGame(event, storageUsers, userObj, state, setState) {
     event.preventDefault();
@@ -48,27 +48,18 @@ function GameUI(props) {
 
   // FUNCTION TO GET VALUE FROM BUTTONS
   function buttonCallback(e, userObj, state, setState) {
-    console.log("Seeeeeeeeeeeeeeeeeeee", e.target.textContent);
-    //console.log("Scelta utente:", e.target.value);
     let cpuChoice = computerchoice();
-    console.log("Scelta cpu:", cpuChoice);
 
-    handleScore(
-      e.target.textContent.toLowerCase(),
-      userObj,
-      cpuChoice,
-      state,
-      setState
-    );
+    handleScore(e.target.textContent, userObj, cpuChoice, state, setState);
   }
 
   function roundResult(userChoice, cpuChoice) {
     if (userChoice === cpuChoice) {
       return "Pareggio";
     } else if (
-      (userChoice === "carta" && cpuChoice === "forbice") ||
-      (userChoice === "forbice" && cpuChoice === "sasso") ||
-      (userChoice === "sasso" && cpuChoice === "carta")
+      (userChoice === "CARTA" && cpuChoice === "FORBICE") ||
+      (userChoice === "FORBICE" && cpuChoice === "SASSO") ||
+      (userChoice === "SASSO" && cpuChoice === "CARTA")
     ) {
       return "Hai perso";
     }
@@ -151,17 +142,19 @@ function GameUI(props) {
         </Text>
         <View style={gameStyles.buttonsContainer}>
           <CustomButton
+            style={{ marginTop: 100 }}
             label="SASSO"
             callbackInput={handleButtonCallback}
             source={props.stoneImage}
-            detail={"SASSO"}
           />
           <CustomButton
+            style={{ marginTop: 100 }}
             label="CARTA"
             callbackInput={handleButtonCallback}
             source={props.paperImage}
           />
           <CustomButton
+            style={{ marginTop: 100 }}
             label="FORBICE"
             callbackInput={handleButtonCallback}
             source={props.scissorImage}

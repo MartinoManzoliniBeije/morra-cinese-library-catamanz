@@ -8,8 +8,8 @@ function CustomButton(props) {
   }
 
   return (
-    <View style={buttonStyle.container}>
-      <TouchableOpacity onPress={buttonCallback}>
+    <View style={[buttonStyle.container, props.style]}>
+      <TouchableOpacity onPress={buttonCallback} style={buttonStyle.button}>
         <Image source={props.source} />
         <Text>{props.label}</Text>
       </TouchableOpacity>
