@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import gameStyles from "./gameUIStyle";
-import Button from "../../functionalComponents/button/Button";
-//import { buttonCallback } from "../../index.js";
-//import { getStorage, setStorage } from "../../../utils/asyncStorageUtils";
+import { CustomButton } from "../../index";
 
-function GameUI() {
+function GameUI(props) {
   const [state, setState] = useState({
     showGame: false,
     currentGame: {
@@ -152,18 +150,18 @@ function GameUI() {
           di 3. Buona fortuna!
         </Text>
         <View style={gameStyles.buttonsContainer}>
-          <Button
+          <CustomButton
             label="SASSO"
             callbackInput={handleButtonCallback}
             source={props.stoneImage}
             detail={"SASSO"}
           />
-          <Button
+          <CustomButton
             label="CARTA"
             callbackInput={handleButtonCallback}
             source={props.paperImage}
           />
-          <Button
+          <CustomButton
             label="FORBICE"
             callbackInput={handleButtonCallback}
             source={props.scissorImage}

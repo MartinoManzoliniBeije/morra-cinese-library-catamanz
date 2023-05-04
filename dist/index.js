@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-Object.defineProperty(exports, "Button", {
+Object.defineProperty(exports, "CustomButton", {
   enumerable: true,
   get: function get() {
     return _Button.default;

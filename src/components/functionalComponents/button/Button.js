@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { buttonStyle } from "./buttonStyle";
 
-function Button(props) {
+function CustomButton(props) {
   function buttonCallback(e) {
     props.callbackInput(e);
   }
@@ -17,4 +17,4 @@ function Button(props) {
   );
 }
 
-export default Button;
+export default CustomButton;

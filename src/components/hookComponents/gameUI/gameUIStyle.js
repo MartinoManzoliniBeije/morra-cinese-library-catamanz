@@ -2,14 +2,14 @@ import { StyleSheet } from "react-native";
 
 const gameStyles = StyleSheet.create({
   gamecontainer: {
-    display: "default",
+    display: "flex",
     backgroundColor: "#fae8a2",
     textAlign: "center",
-    width: "90%",
-    height: "98%",
-    margin: "0 auto",
+    width: 90,
+    height: 98,
+    margin: 20,
     borderColor: "black",
-    borderWidth: "1px",
+    borderWidth: 1,
     borderStyle: "solid",
     borderRadius: 20,
   },
@@ -25,11 +25,11 @@ const gameStyles = StyleSheet.create({
     marginTop: 40,
   },
   gameScore: {
-    borderWidth: "1px",
+    borderWidth: 1,
     borderColor: "black",
     borderStyle: "solid",
     width: "90%",
-    margin: "40px auto",
+    margin: 40,
   },
   scoreContainer: {
     fontSize: 20,
